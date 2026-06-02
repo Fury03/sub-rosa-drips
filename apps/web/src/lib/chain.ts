@@ -19,7 +19,7 @@ export const DEFAULT_ROUND_ID = import.meta.env.VITE_ROUND_ID
 
 // Commit window length is LIVE_REVEAL_IN_SECONDS - LIVE_COMMIT_CLOSE_BEFORE_REVEAL_SECONDS.
 // Keep ~10s buffer between commit close and Drand R so reveals never race the beacon.
-export const LIVE_REVEAL_IN_SECONDS = 35;
+export const LIVE_REVEAL_IN_SECONDS = 30;
 export const LIVE_COMMIT_CLOSE_BEFORE_REVEAL_SECONDS = 10;
 export const LIVE_COMMIT_WINDOW_SECONDS =
   LIVE_REVEAL_IN_SECONDS - LIVE_COMMIT_CLOSE_BEFORE_REVEAL_SECONDS;

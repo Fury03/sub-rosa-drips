@@ -73,6 +73,7 @@ function FlowSteps({
 }
 
 function PhaseGuide(props: {
+  useCase: UseCase;
   address: string | null;
   canUseContract: boolean;
   roundId: bigint | null;
@@ -83,7 +84,6 @@ function PhaseGuide(props: {
   drandGate: ReturnType<typeof useDrandCountdown>;
   status: ActionStatus;
   entryValue: number;
-  inputLabel: string;
   onEntryChange: (v: number) => void;
   connect: () => void;
   createRound: () => void;
@@ -91,6 +91,7 @@ function PhaseGuide(props: {
   openAndReveal: () => void;
 }) {
   const {
+    useCase,
     address,
     canUseContract,
     roundId,
@@ -101,7 +102,6 @@ function PhaseGuide(props: {
     drandGate,
     status,
     entryValue,
-    inputLabel,
     onEntryChange,
     connect,
     createRound,
@@ -144,13 +144,25 @@ function PhaseGuide(props: {
     ctaLabel = "Create round";
     cta = createRound;
   } else if (roundId != null && !committed && !commitClosed) {
-    tone = commitSeconds <= 8 ? "danger" : "urgent";
-    eyebrow = "Step 2 · commit";
-    title = "Seal your entry";
-    detail = "Enter your value and commit before the window closes. The bid is encrypted to Drand R.";
+    tone = commitSeconds <= 6 ? "danger" : "urgent";
+    eyebrow = `Step 2 · ${useCase.actorRole} commit`;
+    title =
+      useCase.inputKind === "ballot"
+        ? "Cast your sealed ballot"
+        : useCase.inputKind === "score"
+          ? "Submit your sealed score"
+          : useCase.id === "bounty"
+            ? "Place your sealed bid"
+            : "Submit your sealed allocation";
+    detail =
+      useCase.inputKind === "ballot"
+        ? "Pick an option and seal it before the window closes. Encrypted to Drand R."
+        : useCase.inputKind === "score"
+          ? "Move the slider to your score and seal. Other judges cannot see it until R."
+          : "Choose an amount and seal. The number is encrypted to Drand R until reveal.";
     timerLabel = "Time left";
     timerValue = formatCountdown(commitSeconds);
-    ctaLabel = `Seal entry`;
+    ctaLabel = useCase.commitCta;
     cta = commitEntry;
     showInput = true;
   } else if (roundId != null && !committed && commitClosed) {
@@ -216,30 +228,107 @@ function PhaseGuide(props: {
 
         {showInput ? (
           <motion.div
-            className="phase-input"
+            className={`phase-input phase-input--${useCase.inputKind}`}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25 }}
           >
-            <label htmlFor="entry-value">{inputLabel}</label>
-            <div className="value-control">
-              <input
-                id="entry-range"
-                type="range"
-                min="1"
-                max="150"
-                value={entryValue}
-                onChange={(e) => onEntryChange(Number(e.target.value || 1))}
-              />
-              <input
-                id="entry-value"
-                type="number"
-                min="1"
-                value={entryValue}
-                onChange={(e) => onEntryChange(Number(e.target.value || 1))}
-              />
-            </div>
-            <small>Escrow: {formatDemoAmount(toDemoEscrowAmount(entryValue))}</small>
+            <label>{useCase.inputLabel}</label>
+
+            {useCase.inputKind === "ballot" && useCase.options ? (
+              <div className="option-grid" role="radiogroup" aria-label={useCase.inputLabel}>
+                {useCase.options.map((option) => {
+                  const selected = entryValue === option.value;
+                  return (
+                    <button
+                      key={option.label}
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      className={`option-card ${option.tone} ${selected ? "selected" : ""}`}
+                      onClick={() => onEntryChange(option.value)}
+                    >
+                      <strong>{option.label}</strong>
+                      <small>{option.helper}</small>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
+
+            {useCase.inputKind === "score" ? (
+              <div className="score-control">
+                <div className="score-display">
+                  <b>
+                    {entryValue.toLocaleString(undefined, {
+                      minimumFractionDigits: 1,
+                      maximumFractionDigits: 1,
+                    })}
+                  </b>
+                  <span>{useCase.unit}</span>
+                </div>
+                <input
+                  type="range"
+                  min={useCase.min ?? 0}
+                  max={useCase.max ?? 10}
+                  step={useCase.step ?? 0.5}
+                  value={entryValue}
+                  onChange={(e) => onEntryChange(Number(e.target.value))}
+                />
+                <div className="score-marks" aria-hidden="true">
+                  <span>0</span>
+                  <span>5</span>
+                  <span>10</span>
+                </div>
+              </div>
+            ) : null}
+
+            {useCase.inputKind === "amount" ? (
+              <div className="amount-control">
+                {useCase.presets ? (
+                  <div className="preset-chips">
+                    {useCase.presets.map((preset) => {
+                      const selected = entryValue === preset;
+                      return (
+                        <button
+                          key={preset}
+                          type="button"
+                          className={`preset-chip ${selected ? "selected" : ""}`}
+                          onClick={() => onEntryChange(preset)}
+                        >
+                          {preset.toLocaleString()}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : null}
+                <div className="value-control">
+                  <input
+                    type="range"
+                    min={useCase.min ?? 1}
+                    max={useCase.max ?? 1000}
+                    step={useCase.step ?? 1}
+                    value={entryValue}
+                    onChange={(e) => onEntryChange(Number(e.target.value || 1))}
+                  />
+                  <div className="amount-input">
+                    <input
+                      type="number"
+                      min={useCase.min ?? 1}
+                      max={useCase.max}
+                      step={useCase.step ?? 1}
+                      value={entryValue}
+                      onChange={(e) => onEntryChange(Number(e.target.value || 1))}
+                    />
+                    {useCase.unit ? <span>{useCase.unit}</span> : null}
+                  </div>
+                </div>
+              </div>
+            ) : null}
+
+            <small>
+              Sealed escrow: {formatDemoAmount(toDemoEscrowAmount(entryValue))}
+            </small>
           </motion.div>
         ) : null}
       </div>
@@ -409,6 +498,7 @@ function LivePanel({ active, onCelebrate }: { active: UseCase; onCelebrate: () =
       />
 
       <PhaseGuide
+        useCase={active}
         address={address}
         canUseContract={canUseContract}
         roundId={roundId}
@@ -419,7 +509,6 @@ function LivePanel({ active, onCelebrate }: { active: UseCase; onCelebrate: () =
         drandGate={drandGate}
         status={status}
         entryValue={entryValue}
-        inputLabel={active.inputLabel}
         onEntryChange={setEntryValue}
         connect={() => void connect()}
         createRound={() => void createRound()}
@@ -509,17 +598,34 @@ function LivePanel({ active, onCelebrate }: { active: UseCase; onCelebrate: () =
 }
 
 function ComparisonMini({ useCase, committed }: { useCase: UseCase; committed: boolean }) {
+  const { comparison, examples } = useCase;
   return (
     <div className="comparison-grid">
       <article className="comparison-card leaky">
         <span>Without sealing</span>
-        <h3>Visible early</h3>
-        <p>{useCase.traditional}</p>
+        <h3>{comparison.leakyTitle}</h3>
+        <p>{comparison.leakyBody}</p>
+        <ul className="example-list" aria-label="Visible to everyone">
+          {examples.map((ex) => (
+            <li key={ex.name}>
+              <span>{ex.name}</span>
+              <b>{ex.label}</b>
+            </li>
+          ))}
+        </ul>
       </article>
       <article className="comparison-card sealed">
         <span>Sub Rosa</span>
-        <h3>{committed ? "Sealed on-chain" : "Hidden until R"}</h3>
-        <p>{useCase.subrosa}</p>
+        <h3>{committed ? comparison.sealedTitleAfterCommit : comparison.sealedTitle}</h3>
+        <p>{comparison.sealedBody}</p>
+        <ul className="example-list sealed" aria-label="Sealed until reveal">
+          {examples.map((ex) => (
+            <li key={ex.name}>
+              <span>{ex.name}</span>
+              <b>•••••</b>
+            </li>
+          ))}
+        </ul>
       </article>
     </div>
   );

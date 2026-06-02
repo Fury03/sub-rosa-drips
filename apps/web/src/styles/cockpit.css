@@ -646,9 +646,9 @@
 /* Inline input within phase */
 .phase-input {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   margin-top: 10px;
-  padding: 14px;
+  padding: 16px;
   border: 1px solid var(--line-1);
   border-radius: var(--radius);
   background: var(--surface-0);
@@ -662,43 +662,243 @@
   text-transform: uppercase;
 }
 
+.phase-input small {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+
+/* === Ballot — segmented Yes / Abstain / No === */
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.option-card {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  align-content: center;
+  min-height: 84px;
+  padding: 14px 16px;
+  border: 1px solid var(--line-2);
+  border-radius: 14px;
+  color: var(--muted);
+  text-align: left;
+  background: var(--bg-1);
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    border-color 200ms var(--ease),
+    background 200ms var(--ease),
+    color 200ms var(--ease),
+    transform 200ms var(--ease);
+}
+
+.option-card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-1px);
+}
+
+.option-card strong {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.option-card small {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+.option-card.selected {
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.option-card.for.selected {
+  border-color: rgba(110, 245, 176, 0.55);
+  background: rgba(110, 245, 176, 0.1);
+  box-shadow: 0 0 24px -4px rgba(110, 245, 176, 0.35);
+}
+
+.option-card.for.selected small {
+  color: rgba(110, 245, 176, 0.85);
+}
+
+.option-card.against.selected {
+  border-color: rgba(255, 119, 111, 0.55);
+  background: rgba(255, 119, 111, 0.08);
+  box-shadow: 0 0 24px -4px rgba(255, 119, 111, 0.32);
+}
+
+.option-card.against.selected small {
+  color: rgba(255, 168, 162, 0.95);
+}
+
+.option-card.neutral.selected {
+  border-color: rgba(177, 140, 255, 0.55);
+  background: rgba(177, 140, 255, 0.08);
+  box-shadow: 0 0 24px -4px rgba(177, 140, 255, 0.32);
+}
+
+.option-card.neutral.selected small {
+  color: rgba(196, 173, 255, 0.95);
+}
+
+/* === Score — big number + slider === */
+.score-control {
+  display: grid;
+  gap: 10px;
+}
+
+.score-display {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--line-1);
+  border-radius: 12px;
+  background: var(--bg-1);
+}
+
+.score-display b {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--ink);
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-display span {
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+
+.score-control input[type="range"] {
+  width: 100%;
+  height: 6px;
+  accent-color: var(--green);
+}
+
+.score-marks {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 4px;
+  color: var(--faint);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+}
+
+/* === Amount — preset chips + range + number === */
+.amount-control {
+  display: grid;
+  gap: 12px;
+}
+
+.preset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.preset-chip {
+  padding: 6px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  background: var(--bg-1);
+  cursor: pointer;
+  transition:
+    border-color 180ms var(--ease),
+    color 180ms var(--ease),
+    background 180ms var(--ease);
+}
+
+.preset-chip:hover {
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+.preset-chip.selected {
+  border-color: rgba(110, 245, 176, 0.55);
+  background: rgba(110, 245, 176, 0.1);
+  color: var(--green);
+}
+
 .value-control {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 100px;
+  grid-template-columns: minmax(0, 1fr) 160px;
   gap: 12px;
   align-items: center;
 }
 
 .value-control input[type="range"] {
   width: 100%;
-  accent-color: var(--green);
   height: 6px;
+  accent-color: var(--green);
 }
 
-.value-control input[type="number"] {
-  width: 100%;
-  height: 48px;
+.amount-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   padding: 0 12px;
+  height: 48px;
   border: 1px solid var(--line-2);
   border-radius: 10px;
-  color: var(--ink);
-  font-family: var(--mono);
-  font-size: 1.15rem;
-  font-weight: 600;
   background: var(--bg-1);
-  transition: border-color 200ms var(--ease);
+  transition: border-color 200ms var(--ease), box-shadow 200ms var(--ease);
 }
 
-.value-control input[type="number"]:focus {
-  outline: 0;
+.amount-input:focus-within {
   border-color: var(--green);
   box-shadow: 0 0 0 3px rgba(110, 245, 176, 0.18);
 }
 
-.phase-input small {
-  color: var(--muted);
+.amount-input input[type="number"] {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  font-weight: 600;
+  background: transparent;
+  font-variant-numeric: tabular-nums;
+}
+
+.amount-input input[type="number"]:focus {
+  outline: 0;
+}
+
+.amount-input span {
+  flex-shrink: 0;
+  color: var(--faint);
   font-family: var(--mono);
   font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+
+@media (max-width: 680px) {
+  .option-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .value-control {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Right side — the timer + cta */
@@ -900,6 +1100,48 @@
   color: var(--ink-2);
   font-size: 0.94rem;
   line-height: 1.5;
+}
+
+.example-list {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line-1);
+  border-radius: 12px;
+  background: var(--bg-1);
+  list-style: none;
+}
+
+.example-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  border-bottom: 1px dashed var(--line-1);
+}
+
+.example-list li:last-child {
+  border-bottom: 0;
+}
+
+.example-list li span {
+  color: var(--muted);
+}
+
+.example-list li b {
+  color: var(--ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.example-list.sealed li b {
+  color: var(--green);
+  letter-spacing: 0.18em;
+  font-weight: 700;
 }
 
 .comparison-card.sealed::after {

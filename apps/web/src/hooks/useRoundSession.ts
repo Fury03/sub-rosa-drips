@@ -209,7 +209,8 @@ export function useRoundSession(active: UseCase, defaultRoundId: bigint | null) 
   async function commitEntry() {
     if (!contract || !address || roundId == null) return;
     const id = active.id;
-    const workingId = toast.push("working", "Sealing your entry…", `${active.inputLabel}: ${entryValue}`);
+    const displayed = active.formatValue(entryValue);
+    const workingId = toast.push("working", "Sealing your entry…", `${active.inputLabel}: ${displayed}`);
     setStatus("working");
     try {
       const roundTx = await contract.get_round({ round_id: roundId });
@@ -240,7 +241,7 @@ export function useRoundSession(active: UseCase, defaultRoundId: bigint | null) 
       });
       setStatus("ok");
       const msg = `${formatDemoAmount(value)} escrow locked · ciphertext on-chain`;
-      push(`Committed sealed ${active.inputLabel}: ${entryValue}.`, id);
+      push(`Sealed ${active.inputLabel}: ${displayed}.`, id);
       toast.dismiss(workingId);
       toast.push("success", "Entry sealed on-chain", msg);
       await refresh(roundId, id);
