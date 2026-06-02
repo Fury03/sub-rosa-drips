@@ -545,6 +545,7 @@ function LivePanel({
     commitSecondsRemaining,
     commitClosed,
     revealedCount,
+    committed,
     commitValue,
     roundId,
     roundCreatedAt,
@@ -620,7 +621,7 @@ function LivePanel({
       <FlowSteps
         address={address}
         roundId={roundId}
-        committed={Boolean(commitValue)}
+        committed={committed}
         revealed={revealedCount > 0}
         working={status === "working"}
       />
@@ -630,7 +631,7 @@ function LivePanel({
         address={address}
         canUseContract={canUseContract}
         roundId={roundId}
-        committed={Boolean(commitValue)}
+        committed={committed}
         revealedCount={revealedCount}
         commitSecondsRemaining={commitSecondsRemaining}
         commitClosed={commitClosed}
@@ -659,13 +660,13 @@ function LivePanel({
 
       <div className="proof-layout">
         {roundId == null ? (
-          <ComparisonMini useCase={active} committed={Boolean(commitValue)} />
+          <ComparisonMini useCase={active} committed={committed} />
         ) : (
           <CohortPanel
             useCase={active}
             roundCreatedAt={roundCreatedAt}
             revealed={revealedCount > 0}
-            userCommitted={Boolean(commitValue)}
+            userCommitted={committed}
             userValue={commitValue == null ? null : entryValue}
             realPeers={realPeers}
             roundId={roundId}

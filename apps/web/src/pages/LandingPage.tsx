@@ -87,12 +87,7 @@ export function LandingPage({
                 />
               </svg>
             </button>
-            <a
-              className="secondary-action"
-              href="https://github.com/karagozemin/Sub-Rosa"
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a className="secondary-action" href="#/architecture">
               Read the architecture
             </a>
           </motion.div>

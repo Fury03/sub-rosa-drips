@@ -48,6 +48,8 @@ export interface CaseSession {
   roundId: bigint | null;
   auditorPublicKey: Uint8Array | null;
   commitValue: bigint | null;
+  /** Off-chain copy of the tlock ciphertext; fallback if Temporary seal storage expired. */
+  sealedCiphertext: Uint8Array | null;
   /** Timestamp (ms) when the round was created locally; powers cohort animations. */
   roundCreatedAt: number | null;
   live: LiveRound | null;
@@ -59,6 +61,7 @@ function emptySession(roundId: bigint | null = null): CaseSession {
     roundId,
     auditorPublicKey: null,
     commitValue: null,
+    sealedCiphertext: null,
     roundCreatedAt: null,
     live: null,
     log: [],
@@ -88,7 +91,8 @@ export function useRoundSession(active: UseCase) {
   );
   const contract = useWalletContract(address);
   const session = sessions[active.id];
-  const { auditorPublicKey, commitValue, live, log, roundId, roundCreatedAt } = session;
+  const { auditorPublicKey, commitValue, sealedCiphertext, live, log, roundId, roundCreatedAt } =
+    session;
   const canUseContract = Boolean(CONTRACT_ID && contract);
   const targetRound = live ? Number(live.round.reveal_round) : DEMO_TRACE.meta.revealRound;
   const drandGate = useDrandCountdown(targetRound);
@@ -96,6 +100,8 @@ export function useRoundSession(active: UseCase) {
     ? Math.max(0, Number(live.round.commit_deadline) - Math.floor(Date.now() / 1000))
     : null;
   const commitClosed = commitSecondsRemaining != null && commitSecondsRemaining <= 0;
+  const committedOnChain = Boolean(address && live?.bidStates[address]);
+  const committed = committedOnChain || (commitValue != null && live == null);
   const revealedCount = live
     ? Object.values(live.bidStates).filter((state) => state.revealed_value != null).length
     : 0;
@@ -202,6 +208,9 @@ export function useRoundSession(active: UseCase) {
         roundId: nextRoundId,
         auditorPublicKey: auditor.publicKey,
         roundCreatedAt: Date.now(),
+        commitValue: null,
+        sealedCiphertext: null,
+        live: null,
       });
       setStatus("ok");
       const msg = `Round #${nextRoundId} · commit window ~${commitWindowSeconds}s · R=${revealRound}`;
@@ -253,6 +262,9 @@ export function useRoundSession(active: UseCase) {
         roundId: parsedId,
         auditorPublicKey: new Uint8Array(round.auditor_pubkey),
         roundCreatedAt: Date.now(),
+        commitValue: null,
+        sealedCiphertext: null,
+        live: null,
       });
       setStatus("ok");
       const remaining = commitDeadline - now;
@@ -301,6 +313,7 @@ export function useRoundSession(active: UseCase) {
       await tx.signAndSend();
       updateSession(id, {
         commitValue: value,
+        sealedCiphertext: sealed.ciphertext,
         auditorPublicKey: auditorPublicKey ?? roundAuditorPublicKey,
       });
       setStatus("ok");
@@ -356,7 +369,13 @@ export function useRoundSession(active: UseCase) {
         const state = (await contract.get_bid_state({ round_id: roundId, bidder })).result.unwrap();
         if (state.revealed_value == null) pending.push(bidder);
       }
+      if (pending.length === 0 && bidders.length === 0) {
+        throw new Error(
+          "No sealed entries on-chain for this round. Commit your bid before Drand R, then open + reveal.",
+        );
+      }
       let revealed = 0;
+      const skipped: string[] = [];
       for (let i = 0; i < pending.length; i += 1) {
         const bidder = pending[i];
         setRevealProgress({ current: i + 1, total: pending.length });
@@ -367,8 +386,16 @@ export function useRoundSession(active: UseCase) {
           shortAddr(bidder),
         );
         const seal = (await contract.get_seal({ round_id: roundId, bidder })).result;
-        if (!seal) continue;
-        const opened = await openBid(new Uint8Array(seal.ciphertext), drand);
+        let ciphertext: Uint8Array | null = seal ? new Uint8Array(seal.ciphertext) : null;
+        if (!ciphertext && address === bidder && sealedCiphertext) {
+          ciphertext = sealedCiphertext;
+        }
+        if (!ciphertext) {
+          skipped.push(`${shortAddr(bidder)}: seal expired or missing`);
+          toast.dismiss(stepId);
+          continue;
+        }
+        const opened = await openBid(ciphertext, drand);
         const revealTx = await contract.reveal({
           round_id: roundId,
           bidder,
@@ -380,11 +407,29 @@ export function useRoundSession(active: UseCase) {
         toast.dismiss(stepId);
       }
       setRevealProgress(null);
+      if (revealed === 0) {
+        const detail =
+          skipped.length > 0
+            ? skipped.join("; ")
+            : `${pending.length} pending bid(s) could not be opened.`;
+        throw new Error(
+          pending.length > 0
+            ? `Reveal gate is open but no ciphertext could be decrypted. ${detail}`
+            : "All bids are already revealed.",
+        );
+      }
       setStatus("ok");
       const msg = `${revealed} entr${revealed === 1 ? "y" : "ies"} opened permissionlessly`;
       push(msg, id);
       toast.dismiss(workingId);
       toast.push("success", "Reveal complete", msg);
+      if (skipped.length > 0) {
+        toast.push(
+          "info",
+          "Some bids skipped",
+          skipped.join("; "),
+        );
+      }
       await refresh(roundId, id);
     } catch (error) {
       setRevealProgress(null);
@@ -409,6 +454,7 @@ export function useRoundSession(active: UseCase) {
     commitSecondsRemaining,
     commitClosed,
     revealedCount,
+    committed,
     commitValue,
     roundId,
     roundCreatedAt,
