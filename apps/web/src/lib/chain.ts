@@ -19,7 +19,7 @@ export const DEFAULT_ROUND_ID = import.meta.env.VITE_ROUND_ID
 
 // Commit window length is LIVE_REVEAL_IN_SECONDS - LIVE_COMMIT_CLOSE_BEFORE_REVEAL_SECONDS.
 // Keep ~10s buffer between commit close and Drand R so reveals never race the beacon.
-export const LIVE_REVEAL_IN_SECONDS = 30;
+export const LIVE_REVEAL_IN_SECONDS = 37;
 export const LIVE_COMMIT_CLOSE_BEFORE_REVEAL_SECONDS = 10;
 export const LIVE_COMMIT_WINDOW_SECONDS =
   LIVE_REVEAL_IN_SECONDS - LIVE_COMMIT_CLOSE_BEFORE_REVEAL_SECONDS;
@@ -31,13 +31,13 @@ export const LIVE_REVEAL_WINDOW_AFTER_REVEAL_SECONDS = 240;
  * later, so a 120s window means ~130s until Drand R publishes.
  */
 export const COMMIT_DURATION_PRESETS: Array<{ seconds: number; label: string; helper: string }> = [
-  { seconds: 20, label: "20s", helper: "solo demo" },
+  { seconds: 27, label: "27s", helper: "solo demo" },
   { seconds: 60, label: "1 min", helper: "quick paired" },
   { seconds: 120, label: "2 min", helper: "paired demo" },
   { seconds: 300, label: "5 min", helper: "public test" },
 ];
 
-export const DEFAULT_COMMIT_DURATION_SECONDS = 20;
+export const DEFAULT_COMMIT_DURATION_SECONDS = 27;
 
 export function freighterError(result: { error?: unknown }) {
   if (!result.error) return null;
