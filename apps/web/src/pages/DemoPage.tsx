@@ -140,7 +140,7 @@ function PhaseGuide(props: {
   let detail = "Use a funded Stellar testnet wallet to run a sealed round end-to-end.";
   let timerLabel = "Status";
   let timerValue = "ready";
-  let ctaLabel = "Connect wallet";
+  let ctaLabel = "Connect Freighter";
   let cta = connect;
   let ctaDisabled = working;
   let showInput = false;
