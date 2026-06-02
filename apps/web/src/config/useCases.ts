@@ -20,6 +20,15 @@ export interface CaseExample {
   label: string;
 }
 
+export interface Peer {
+  name: string;
+  value: number;
+  /** ms offset from round creation when this peer "commits" their sealed entry */
+  delayMs: number;
+}
+
+export type OutcomeKind = "tally" | "leaderboard" | "highest" | "distribution";
+
 export interface UseCase {
   id: UseCaseId;
   nav: string;
@@ -53,6 +62,9 @@ export interface UseCase {
     sealedTitleAfterCommit: string;
     sealedBody: string;
   };
+  /** simulated peers that commit during the round to make the demo feel populated */
+  cohort: Peer[];
+  outcomeKind: OutcomeKind;
 }
 
 const formatUsdc = (value: number): string =>
@@ -109,6 +121,13 @@ export const USE_CASES: UseCase[] = [
       sealedBody:
         "Every ballot is encrypted to Drand R; the DAO sees one final tally at reveal.",
     },
+    cohort: [
+      { name: "Member alpha", value: 100, delayMs: 1200 },
+      { name: "Member beta", value: 100, delayMs: 3800 },
+      { name: "Member gamma", value: 0, delayMs: 7400 },
+      { name: "Member delta", value: 50, delayMs: 11600 },
+    ],
+    outcomeKind: "tally",
   },
   {
     id: "grants",
@@ -142,6 +161,13 @@ export const USE_CASES: UseCase[] = [
       sealedBody:
         "Every judge commits sealed; the keeper opens all scores together at reveal.",
     },
+    cohort: [
+      { name: "Judge alpha", value: 8.2, delayMs: 1500 },
+      { name: "Judge beta", value: 9.1, delayMs: 4200 },
+      { name: "Judge gamma", value: 7.6, delayMs: 7800 },
+      { name: "Judge delta", value: 8.8, delayMs: 11200 },
+    ],
+    outcomeKind: "leaderboard",
   },
   {
     id: "bounty",
@@ -175,6 +201,13 @@ export const USE_CASES: UseCase[] = [
       sealedBody:
         "All bids are encrypted to Drand R; the contract opens them simultaneously.",
     },
+    cohort: [
+      { name: "Reviewer alpha", value: 480, delayMs: 1300 },
+      { name: "Reviewer beta", value: 520, delayMs: 4400 },
+      { name: "Reviewer gamma", value: 410, delayMs: 7900 },
+      { name: "Reviewer delta", value: 600, delayMs: 11800 },
+    ],
+    outcomeKind: "highest",
   },
   {
     id: "allocation",
@@ -208,6 +241,13 @@ export const USE_CASES: UseCase[] = [
       sealedBody:
         "Demand is sealed until R; clearing uses one public reveal set, no front-running.",
     },
+    cohort: [
+      { name: "Cohort alpha", value: 5200, delayMs: 1400 },
+      { name: "Cohort beta", value: 6650, delayMs: 4600 },
+      { name: "Cohort gamma", value: 4400, delayMs: 8200 },
+      { name: "Cohort delta", value: 8100, delayMs: 12000 },
+    ],
+    outcomeKind: "distribution",
   },
 ];
 

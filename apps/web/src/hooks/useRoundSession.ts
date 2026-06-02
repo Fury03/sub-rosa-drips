@@ -48,6 +48,8 @@ export interface CaseSession {
   roundId: bigint | null;
   auditorPublicKey: Uint8Array | null;
   commitValue: bigint | null;
+  /** Timestamp (ms) when the round was created locally; powers cohort animations. */
+  roundCreatedAt: number | null;
   live: LiveRound | null;
   log: string[];
 }
@@ -57,6 +59,7 @@ function emptySession(roundId: bigint | null = null): CaseSession {
     roundId,
     auditorPublicKey: null,
     commitValue: null,
+    roundCreatedAt: null,
     live: null,
     log: [],
   };
@@ -85,7 +88,7 @@ export function useRoundSession(active: UseCase, defaultRoundId: bigint | null) 
   );
   const contract = useWalletContract(address);
   const session = sessions[active.id];
-  const { auditorPublicKey, commitValue, live, log, roundId } = session;
+  const { auditorPublicKey, commitValue, live, log, roundId, roundCreatedAt } = session;
   const canUseContract = Boolean(CONTRACT_ID && contract);
   const targetRound = live ? Number(live.round.reveal_round) : DEMO_TRACE.meta.revealRound;
   const drandGate = useDrandCountdown(targetRound);
@@ -190,7 +193,11 @@ export function useRoundSession(active: UseCase, defaultRoundId: bigint | null) 
       });
       const sent = await tx.signAndSend();
       const nextRoundId = sent.result.unwrap() as bigint;
-      updateSession(id, { roundId: nextRoundId, auditorPublicKey: auditor.publicKey });
+      updateSession(id, {
+        roundId: nextRoundId,
+        auditorPublicKey: auditor.publicKey,
+        roundCreatedAt: Date.now(),
+      });
       setStatus("ok");
       const msg = `Round #${nextRoundId} · commit in ~${LIVE_COMMIT_WINDOW_SECONDS}s · R=${revealRound}`;
       push(msg, id);
@@ -347,6 +354,7 @@ export function useRoundSession(active: UseCase, defaultRoundId: bigint | null) 
     revealedCount,
     commitValue,
     roundId,
+    roundCreatedAt,
     live,
     log,
     revealProgress,

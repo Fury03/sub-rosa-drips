@@ -3,11 +3,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AgentActivity, KeeperPanel, X402Logs } from "../components/AgentPanels";
 import { AttackDemo } from "../components/AttackDemo";
 import { AuditorView } from "../components/AuditorView";
+import { CohortPanel } from "../components/CohortPanel";
 import { DrandCountdownChip } from "../components/DrandCountdownChip";
 import { LifecycleView } from "../components/LifecycleView";
 import { MainnetProofCard } from "../components/MainnetProofCard";
 import { MandateCapLab } from "../components/MandateCapLab";
 import { ObserverView } from "../components/ObserverView";
+import { OutcomePanel } from "../components/OutcomePanel";
 import { SettlementRail } from "../components/SettlementRail";
 import type { UseCase, UseCaseId } from "../config/useCases";
 import { USE_CASES } from "../config/useCases";
@@ -451,6 +453,7 @@ function LivePanel({
     revealedCount,
     commitValue,
     roundId,
+    roundCreatedAt,
     live,
     log,
     revealProgress,
@@ -535,7 +538,17 @@ function LivePanel({
       ) : null}
 
       <div className="proof-layout">
-        <ComparisonMini useCase={active} committed={Boolean(commitValue)} />
+        {roundId == null ? (
+          <ComparisonMini useCase={active} committed={Boolean(commitValue)} />
+        ) : (
+          <CohortPanel
+            useCase={active}
+            roundCreatedAt={roundCreatedAt}
+            revealed={revealedCount > 0}
+            userCommitted={Boolean(commitValue)}
+            userValue={commitValue == null ? null : entryValue}
+          />
+        )}
         <FeedbackPanel
           status={status}
           latest={log[0] ?? null}
@@ -543,6 +556,8 @@ function LivePanel({
           commitValue={commitValue}
         />
       </div>
+
+      {revealedCount > 0 ? <OutcomePanel useCase={active} userValue={entryValue} /> : null}
 
       <section className="live-state">
         <div>
