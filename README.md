@@ -5,7 +5,6 @@
 # Sub Rosa
 
 **1st Place — Hack Privacy Track, Build On Stellar Hackathon — IBW 2026**
-(Rise In × Stellar Development Foundation).
 
 **Confidential commit-reveal coordination on Stellar.** Participants commit
 encrypted decisions now; a public, unbiased Drand round unseals them later,
