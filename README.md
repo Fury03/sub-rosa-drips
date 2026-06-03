@@ -4,15 +4,24 @@
 
 # Sub Rosa
 
+**1st Place — Hack Privacy Track, Build On Stellar Hackathon — IBW 2026**
+(Rise In × Stellar Development Foundation).
+
 **Confidential commit-reveal coordination on Stellar.** Participants commit
 encrypted decisions now; a public, unbiased Drand round unseals them later,
 verifiably and all at once. The protocol — not the operator — owns fairness.
 
 > Built on what's proven. Sealed by math, not by trust.
 
-Target: **Build On Stellar Hackathon — IBW 2026** (Rise In × Stellar Development
-Foundation). Primary track: **Main**. Side track: **Privacy**. Agentic
-capabilities are included as supporting proof, not the submitted side track.
+Sub Rosa is now evolving from a hackathon-winning demo into reusable sealed
+coordination infrastructure for Stellar apps: a Soroban primitive, TypeScript
+SDK, keeper service, and integration templates for teams that need fair
+timed reveals without building cryptography from scratch.
+
+Target next milestone: **Stellar Community Fund Build Award**. The goal is to
+turn the current proof into production-ready developer infrastructure:
+`@sub-rosa/sdk`, optional React hooks/components, hosted keeper/reveal
+operations, hardened contracts, and mainnet launch.
 
 Licensed under [MIT](./LICENSE).
 
@@ -29,6 +38,43 @@ Licensed under [MIT](./LICENSE).
 | **Mainnet verify** | `pnpm mainnet:verify` | Mainnet | Read-only check of settled round 1 |
 
 See [docs/LIMITATIONS.md](./docs/LIMITATIONS.md) for honest scope (mainnet ≠ full USDC product).
+
+---
+
+## Integration model
+
+Sub Rosa is not only a hosted frontend. Other Stellar applications can embed
+the primitive directly:
+
+```bash
+npm install @sub-rosa/sdk
+```
+
+```ts
+import { SubRosaClient } from "@sub-rosa/sdk";
+import { sealBid, quicknet } from "@sub-rosa/tlock";
+
+const client = new SubRosaClient({
+  rpcUrl,
+  networkPassphrase,
+  contractId,
+  secretKey,
+});
+
+const sealed = await sealBid({
+  value,
+  nonce,
+  round: revealRound,
+  client: quicknet(),
+  identity,
+  auditorPublicKey,
+});
+
+await client.commit({ roundId, sealed, escrow });
+```
+
+The app layer can be a DAO tool, grants platform, auction UI, RFP workflow, or
+allocation dashboard. Sub Rosa supplies the sealed round state machine.
 
 ---
 
@@ -101,9 +147,11 @@ pnpm mainnet:verify         # mainnet read-only proof
 | Doc | Purpose |
 | --- | --- |
 | **[ARCHITECTURE.md](./ARCHITECTURE.md)** | System overview, lifecycle, trust boundaries, repo map |
+| [docs/SCF_PLAN.md](./docs/SCF_PLAN.md) | SCF Build framing, tranches, deliverables, ecosystem value |
+| [docs/INTEGRATION.md](./docs/INTEGRATION.md) | How another Stellar app embeds Sub Rosa |
 | [docs/TECH_DESIGN.md](./docs/TECH_DESIGN.md) | Cryptography, storage, settlement rails |
 | [docs/THREAT_MODEL.md](./docs/THREAT_MODEL.md) | Adversaries, mitigations, honest limits |
-| [docs/TRACK_ANSWERS.md](./docs/TRACK_ANSWERS.md) | Main + Privacy readiness; agent proof as support |
+| [docs/TRACK_ANSWERS.md](./docs/TRACK_ANSWERS.md) | Hack Privacy proof notes; agent proof as support |
 | [docs/ECOSYSTEM.md](./docs/ECOSYSTEM.md) | Passkey-Kit, Smart Account Kit, OZ Relayer |
 | [docs/DEMO_SCRIPT.md](./docs/DEMO_SCRIPT.md) | 5-minute jury walkthrough |
 | [docs/DEPLOY.md](./docs/DEPLOY.md) | Env: UI build vs runtime secrets |
@@ -120,6 +168,14 @@ pnpm mainnet:verify         # mainnet read-only proof
 - [x] Mainnet **verify** + **micro runner** (dry-run default, tiny XLM cap)
 - [x] Jury UI — one canonical testnet trace (status, bidders, R, auditor blobs, session keys)
 - [x] Watch-mode keeper (`pnpm keeper:watch`)
+
+## SCF roadmap
+
+| Tranche | Goal | Deliverables |
+| --- | --- | --- |
+| 1 | Developer infrastructure | Publish-ready `@sub-rosa/sdk`, integration docs, contract hardening, test vectors |
+| 2 | Testnet pilots | Hosted keeper, reusable UI hooks/components, partner pilot templates, testnet dashboards |
+| 3 | Mainnet launch | Audited/open-source contracts, mainnet deployment, production keeper ops, launch docs |
 
 ## Cryptographic design (Privacy track)
 

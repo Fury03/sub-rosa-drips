@@ -1,20 +1,20 @@
 # Track Answers — Build On Stellar / IBW 2026
 
-Sub Rosa is positioned for **Main + Privacy**. The multi-agent/x402 path stays
-in the product and demo as supporting evidence that autonomous participants can
-use the primitive, but **Agentic is not the selected side track**.
+Sub Rosa won **1st Place in the Hack Privacy Track**. The multi-agent/x402,
+mainnet smoke, SDK, and ecosystem paths stay in the product as supporting
+evidence that the privacy primitive can become reusable Stellar infrastructure.
 
 ## Summary
 
 | Submission area | Strength | Weak point (before) | Addressed by |
 | --- | --- | --- | --- |
-| Main | Reusable primitive, SDK, mainnet, ecosystem depth | OZ Relayer / Passkey "scored flex" thin | OZ Channels adapter, Passkey-Kit demo, `docs/ECOSYSTEM.md` |
-| Privacy side track | tlock + on-chain BLS in code | Separate threat model + auditor UI missing | `docs/THREAT_MODEL.md`, Auditor tab + e2e blob decrypt |
+| Hack Privacy | tlock + on-chain BLS in code | Separate threat model + auditor UI missing | `docs/THREAT_MODEL.md`, Auditor tab + e2e blob decrypt |
+| Infrastructure support | Reusable primitive, SDK, mainnet, ecosystem depth | OZ Relayer / Passkey "scored flex" thin | OZ Channels adapter, Passkey-Kit demo, `docs/ECOSYSTEM.md` |
 | Supporting agent proof | Multi-agent live e2e, mandate, x402, cap negatives | Cap partly off-chain | Passkey tab, honest cap copy, `docs/THREAT_MODEL.md` |
 
 ---
 
-## Main track
+## Infrastructure support
 
 ### What we prove
 
@@ -103,7 +103,7 @@ Same USDC asset rail (SEP-41); different authorization. Winner payment is **not*
 ## Intentional PRD deviation
 
 - **Multi-agent (2 bidders)** instead of PRD's single autonomous agent — stronger
-  supporting proof while the selected side track remains Privacy.
+  supporting proof for the Hack Privacy winning primitive.
 
 ## Mainnet vs testnet (submission)
 

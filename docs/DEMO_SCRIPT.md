@@ -23,7 +23,7 @@ Walkthrough for `pnpm web:dev` (default http://localhost:5173).
 
 ## 4. Agents + x402 (60s)
 
-- Position this as supporting proof; the selected side track remains Privacy.
+- Position this as supporting proof for the Hack Privacy winning primitive.
 - Two agents with principals vs session keys
 - x402 log: 0.10 USDC appraisal settled on-chain
 - **Settlement rails panel:** x402 (appraisal) vs SAC settle() (winner prize) — same USDC, different paths

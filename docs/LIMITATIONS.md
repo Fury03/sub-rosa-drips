@@ -40,4 +40,4 @@ Mainnet does **not** replay 700 / 459 USDC demo amounts. Mainnet smoke uses **1 
 ## Intentional PRD deviation
 
 - **Two autonomous agents** instead of one — stronger supporting proof on testnet.
-  The selected hackathon side track remains Privacy.
+  The winning hackathon track was Hack Privacy.

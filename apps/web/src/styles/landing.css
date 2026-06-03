@@ -64,6 +64,12 @@
   background: rgba(91, 108, 255, 0.06);
 }
 
+.landing-status-pill.winner {
+  border-color: rgba(245, 190, 82, 0.45);
+  color: var(--cream);
+  background: linear-gradient(135deg, rgba(245, 190, 82, 0.18), rgba(91, 108, 255, 0.08));
+}
+
 .landing-status-pill::before {
   content: "";
   width: 8px;
@@ -72,6 +78,11 @@
   background: var(--green);
   box-shadow: 0 0 0 4px rgba(91, 108, 255, 0.2);
   animation: pulse-dot 2.4s var(--ease-in-out) infinite;
+}
+
+.landing-status-pill.winner::before {
+  background: var(--amber);
+  box-shadow: 0 0 0 4px rgba(245, 190, 82, 0.18);
 }
 
 @keyframes pulse-dot {
@@ -167,6 +178,14 @@
   color: var(--ink-2);
   font-size: 1.15rem;
   line-height: 1.55;
+}
+
+.hero-infra-line {
+  max-width: 58ch;
+  margin: -12px 0 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.5;
 }
 
 .hero-actions {

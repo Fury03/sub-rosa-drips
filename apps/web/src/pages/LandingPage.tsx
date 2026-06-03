@@ -45,6 +45,7 @@ export function LandingPage({
           <span>Sub Rosa</span>
         </button>
         <div className="landing-nav-actions">
+          <span className="landing-status-pill winner">Hack Privacy #1</span>
           <span className="landing-status-pill">testnet · live</span>
           <a href="https://github.com/karagozemin/Sub-Rosa" target="_blank" rel="noreferrer">
             GitHub
@@ -64,7 +65,7 @@ export function LandingPage({
         <motion.div className="hero-copy" variants={fadeUp} transition={transition}>
           <span className="hero-eyebrow">
             <span>SR</span>
-            Confidential coordination on Stellar
+            1st Place · Hack Privacy Track
           </span>
           <motion.h1 variants={fadeUp} transition={transition}>
             Sealed rounds. <em>Fair reveals.</em>
@@ -72,6 +73,9 @@ export function LandingPage({
           <motion.p className="lede" variants={fadeUp} transition={transition}>
             Commit votes, scores, and bids on-chain now. Drand round R opens everyone at once —
             no operator can read sealed values early.
+          </motion.p>
+          <motion.p className="hero-infra-line" variants={fadeUp} transition={transition}>
+            Built as an integratable Soroban primitive + SDK for Stellar apps, not just a demo UI.
           </motion.p>
 
           <motion.div className="hero-actions" variants={fadeUp} transition={transition}>
@@ -107,8 +111,8 @@ export function LandingPage({
               <strong>{DEMO_TRACE.keeper.contractBalanceFinal} USDC final</strong>
             </div>
             <div>
-              <span>Trust</span>
-              <strong>no operator reveal</strong>
+              <span>Integration</span>
+              <strong>SDK + contract</strong>
             </div>
           </motion.div>
         </motion.div>
